@@ -2,7 +2,7 @@ import { GraphAdaptor } from "../graph/graphAdaptor";
 import { GraphConstructor } from "../graph/graphConstructor";
 import { OrderSearcher } from "../orderSearch/orderSearcher";
 import { PathSearcher } from "../pathSearch/pathSearcher";
-import { RandomizerTemplate } from "../randomizer/RandomizerTemplate";
+import { RandomizerTemplate } from "../randomizer/randomizerTemplate";
 
 export class RouteSearch{
   private graph: GraphAdaptor;

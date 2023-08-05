@@ -1,5 +1,5 @@
-import { GraphConstructor } from "../graphConstructor";
+import { GraphConstructor } from "./graphConstructor";
 
 export class OSMGraphConstructor implements GraphConstructor{
-
+  
 }

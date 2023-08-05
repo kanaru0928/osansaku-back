@@ -8,6 +8,10 @@ export class RouteSearchDirector{
   }
   
   construct(){
-    
+    this.builder.buildGraphConstructor();
+    this.builder.buildOrderSearcher();
+    this.builder.buildPathSearcher();
+    this.builder.buildRandomizer();
+    return this.builder.getResult();
   }
 }
