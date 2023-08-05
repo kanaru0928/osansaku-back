@@ -1,0 +1,11 @@
+version: '3'
+services:
+  search_api:
+    build: .
+    volumes:
+      - ./search:/usr/search
+      - node_modules:/usr/search/node_modules
+    tty: true
+
+volumes:
+  node_modules:
