@@ -1,5 +1,6 @@
-import { GraphConstructor } from "./graphConstructor";
+import { Graph } from './graph';
+import { GraphConstructor } from './graphConstructor';
 
-export class OSMGraphConstructor implements GraphConstructor{
-  
+export class OSMGraphConstructor implements GraphConstructor {
+  getGraph(): Graph {}
 }

@@ -1,3 +1,1 @@
-export interface RandomizerTemplate{
-  
-}
+export interface RandomizerTemplate {}

@@ -1,3 +1,1 @@
-export interface OrderSearcher{
-  
-}
+export interface OrderSearcher {}

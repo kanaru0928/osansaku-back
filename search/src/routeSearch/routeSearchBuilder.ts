@@ -1,6 +1,6 @@
-import { RouteSearch } from "./routeSearch";
+import { RouteSearch } from './routeSearch';
 
-export interface RouteSearchBuilder{
+export interface RouteSearchBuilder {
   buildGraphConstructor(): void;
   buildOrderSearcher(): void;
   buildPathSearcher(): void;

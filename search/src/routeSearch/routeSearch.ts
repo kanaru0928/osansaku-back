@@ -1,4 +1,4 @@
-import { GraphAdaptor } from "../graph/graphAdaptor";
+import { GraphAdaptor } from "../graph/graph";
 import { GraphConstructor } from "../graph/graphConstructor";
 import { OrderSearcher } from "../orderSearch/orderSearcher";
 import { PathSearcher } from "../pathSearch/pathSearcher";
