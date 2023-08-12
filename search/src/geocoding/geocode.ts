@@ -1,4 +1,4 @@
-import { Coordinate } from '../graph/coordinate';
+import { Coordinate } from '../geometry/coordinate';
 
 export type Geocode = {
   coordinate: Coordinate;

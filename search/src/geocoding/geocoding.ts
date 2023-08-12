@@ -1,3 +1,4 @@
+import { Exception } from '../utils/exception';
 import { Geocode } from './geocode';
 
 export class Geocoding {
@@ -15,9 +16,14 @@ export class Geocoding {
       limit: '1',
     };
     const params = new URLSearchParams(request);
+    console.log(`requesting to ${this.NOMINATIM_URL}?${params} ...`);
     const rawResponse = await fetch(`${this.NOMINATIM_URL}?${params}`).then(
       (response) => response.json(),
     );
+    if (rawResponse.length === 0) {
+      console.log(rawResponse);
+      throw new Error(Exception.GEOCODE_NOT_FOUND);
+    }
     const geocode: Geocode = {
       coordinate: {
         lat: rawResponse[0].lat,

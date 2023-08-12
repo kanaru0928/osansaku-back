@@ -1,5 +1,5 @@
 import { OSMGraphConstructor } from '../graph/osmGraphConstructor';
-import { PrimaryFullSearch } from '../orderSearch/primaryFullSearch';
+import { ORToolsAdaptor } from '../orderSearch/ortoolsAdaptor';
 import { OSRMAdaptor } from '../pathSearch/osrmAdaptor';
 import { Randomizer } from '../randomizer/randomizer';
 import { RouteSearch } from './routeSearch';
@@ -17,7 +17,7 @@ export class DefaultRouteSearch implements RouteSearchBuilder {
   }
 
   buildOrderSearcher(): void {
-    this.routeSearch.setOrderSearcher(new PrimaryFullSearch());
+    this.routeSearch.setOrderSearcher(new ORToolsAdaptor());
   }
 
   buildPathSearcher(): void {

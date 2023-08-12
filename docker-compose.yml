@@ -1,11 +1,19 @@
 version: '3'
 services:
   search_api:
-    build: .
+    build: 
+      context: .
+      dockerfile: search/Dockerfile
     volumes:
       - ./search:/usr/search
       - node_modules:/usr/search/node_modules
     tty: true
-
+  osrm:
+    image: osrm/osrm-backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./geographic:/data
+    command: osrm-routed --algorithm mld /data/japan-latest.osrm
 volumes:
   node_modules:

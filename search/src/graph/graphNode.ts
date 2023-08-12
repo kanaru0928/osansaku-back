@@ -1,3 +1,3 @@
-import { Coordinate } from "./coordinate";
+import { Coordinate } from '../geometry/coordinate';
 
-export type GraphNode = {coordinate: Coordinate};
+export type GraphNode = { coordinate: Coordinate };
