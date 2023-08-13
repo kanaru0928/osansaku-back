@@ -2,10 +2,20 @@ import { Coordinate } from '../geometry/coordinate';
 import { Exception } from '../utils/exception';
 import { Geocode } from './geocode';
 
+/**
+ * 地理情報を取得する
+ */
 export class Geocoding {
-  method: Geocoding.Method;
+  /**
+   * 取得する方法
+   */
+  private method: Geocoding.Method;
   private NOMINATIM_URL = 'http://nominatim.openstreetmap.org/search';
 
+  /**
+   * クラスの初期化
+   * @param method 取得する方法
+   */
   constructor(method: Geocoding.Method) {
     this.method = method;
   }
@@ -31,6 +41,11 @@ export class Geocoding {
     return geocode;
   }
 
+  /**
+   * 
+   * @param query 検索する文字列
+   * @returns 
+   */
   public async getGeocode(query: string): Promise<Geocode> {
     switch (this.method) {
       case Geocoding.Method.Nominatim:
