@@ -1,3 +1,4 @@
+import { Coordinate } from '../geometry/coordinate';
 import { Exception } from '../utils/exception';
 import { Geocode } from './geocode';
 
@@ -25,10 +26,7 @@ export class Geocoding {
       throw new Error(Exception.GEOCODE_NOT_FOUND);
     }
     const geocode: Geocode = {
-      coordinate: {
-        lat: rawResponse[0].lat,
-        lng: rawResponse[0].lon,
-      },
+      coordinate: new Coordinate(rawResponse[0].lat, rawResponse[0].lon),
     };
     return geocode;
   }

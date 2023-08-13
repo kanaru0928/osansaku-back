@@ -3,7 +3,7 @@ import { Route } from '../geometry/route';
 import { PathSearcher } from './pathSearcher';
 
 export class OSRMAdaptor implements PathSearcher {
-  private static readonly END_POINT = 'http://osrm:5000/route/v1/walking/';
+  private static readonly END_POINT = 'http://osrm:3080/route/v1/walking/';
   private static readonly END_POINT_OPTION = {
     steps: 'true',
     overview: 'full',

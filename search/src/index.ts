@@ -2,5 +2,5 @@ import { Geocoding } from './geocoding/geocoding';
 
 (async () => {
   const geocoding = new Geocoding(Geocoding.Method.Nominatim);
-  console.log(await geocoding.getGeocode('chofu sta'));
+  console.log(await geocoding.getGeocode('university of electro-communications'));
 })();
