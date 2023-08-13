@@ -11,7 +11,7 @@ services:
   osrm:
     image: osrm/osrm-backend
     ports:
-      - 5000:5000
+      - 3080:5000
     volumes:
       - ./geographic:/data
     command: osrm-routed --algorithm mld /data/japan-latest.osrm

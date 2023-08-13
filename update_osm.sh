@@ -3,7 +3,7 @@
 cd `dirname $0`/geographic
 
 # osm.pbfデータのダウンロード
-if ! -f japan-latest.osm.pbf ; then
+if ! [ -f japan-latest.osm.pbf ] ; then
   wget https://download.geofabrik.de/asia/japan-latest.osm.pbf
 fi
 
