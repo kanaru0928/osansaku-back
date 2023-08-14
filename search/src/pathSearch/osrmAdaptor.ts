@@ -1,9 +1,10 @@
 import { Coordinate } from '../geometry/coordinate';
 import { Route } from '../geometry/route';
+import { Step } from '../geometry/step';
 import { PathSearcher } from './pathSearcher';
 
 export class OSRMAdaptor implements PathSearcher {
-  private static readonly END_POINT = 'http://osrm:3080/route/v1/walking/';
+  private static readonly END_POINT = 'http://osrm:5000/route/v1/walking/';
   private static readonly END_POINT_OPTION = {
     steps: 'true',
     overview: 'full',
@@ -15,10 +16,17 @@ export class OSRMAdaptor implements PathSearcher {
     return `${OSRMAdaptor.END_POINT}${origin.toLngLat};${destination.toLngLat}?${query}`;
   }
 
+  private createStep(obj: any) {
+    
+  }
+
   private createRoute(obj: any): Route {
-    const primaryRoute = (
-      obj['routes'][0]['coordinates'] as [number, number][]
-    ).map(Coordinate.fromLngLat);
+    const primary = obj['routes'][0];
+    const primaryRoute = (primary['coordinates'] as [number, number][]).map(
+      Coordinate.fromLngLat,
+    );
+
+    const steps = primary['legs']['steps'] as any[];
 
     // TODO: stepsをキャストして、validationをかける
     const ret: Route = {

@@ -20,6 +20,11 @@ export class Geocoding {
     this.method = method;
   }
 
+  /**
+   * nominatim APIを用いたGeocoding
+   * @param query 検索文字列
+   * @returns 地理情報の`Promise`
+   */
   private async nominatim(query: string) {
     const request: Geocoding.NominatimRequest = {
       q: query,
@@ -42,9 +47,9 @@ export class Geocoding {
   }
 
   /**
-   * 
+   * 文字列から地理情報を取得
    * @param query 検索する文字列
-   * @returns 
+   * @returns 地理情報の`Promise`
    */
   public async getGeocode(query: string): Promise<Geocode> {
     switch (this.method) {
@@ -57,6 +62,9 @@ export class Geocoding {
 }
 
 export namespace Geocoding {
+  /**
+   * 取得方法の列挙
+   */
   export enum Method {
     Unset = 'UNSET',
     Nominatim = 'NOMINATIM',
