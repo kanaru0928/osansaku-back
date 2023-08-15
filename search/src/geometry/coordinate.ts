@@ -33,6 +33,14 @@ export class Coordinate {
     return `${this.lng}${separator}${this.lat}`;
   }
 
+  clone() {
+    return new Coordinate(this.lat, this.lng);
+  }
+
+  toString(): string {
+    return this.toLatLng();
+  }
+
   /**
    * 配列`[経度,緯度]`から`Coordinate`を生成
    * @param param0 配列

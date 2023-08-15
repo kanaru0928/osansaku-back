@@ -1,3 +1,3 @@
-import { Edge } from "./edge";
+import { Edge } from './edge';
 
-export class Edges extends Array<Array<Edge>>{}
+export class Edges extends Array<Array<Edge | number>> {}

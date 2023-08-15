@@ -1,1 +1,1 @@
-export type Edge = {to: number, length: number};
+export type Edge = { to: number; length: number };

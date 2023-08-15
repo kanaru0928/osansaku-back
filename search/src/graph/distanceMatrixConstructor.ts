@@ -1,6 +1,7 @@
+import { Coordinate } from '../geometry/coordinate';
 import { DistanceMatrixGraph } from './distanceMatrixGraph';
 import { GraphConstructor } from './graphConstructor';
 
-export class DistanceMatrixConstructor implements GraphConstructor {
-  async getGraph(option: any): Promise<DistanceMatrixGraph> {}
+export interface DistanceMatrixConstructor extends GraphConstructor {
+  getGraph(places: Coordinate[]): Promise<DistanceMatrixGraph>;
 }
