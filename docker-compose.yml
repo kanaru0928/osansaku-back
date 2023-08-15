@@ -23,5 +23,14 @@ services:
       - PBF_PATH=/nominatim/data/japan-latest.osm.pbf
       - REPLICATION_URL=https://download.geofabrik.de/asia/japan-updates/
     shm_size: 1gb
+  optimization:
+    build:
+      context: .
+      dockerfile: optimization/Dockerfile
+    volumes:
+      - ./optimization:/usr/optimization
+    tty: true
+    
+    
 volumes:
   node_modules:
