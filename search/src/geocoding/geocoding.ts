@@ -11,6 +11,7 @@ export class Geocoding {
    */
   private method: Geocoding.Method;
   private NOMINATIM_URL = 'http://nominatim.openstreetmap.org/search';
+  private NOMINATIM_LOCAL_ENDPOINT = 'http://nominatim:8080/search.php';
 
   /**
    * クラスの初期化
@@ -25,14 +26,18 @@ export class Geocoding {
    * @param query 検索文字列
    * @returns 地理情報の`Promise`
    */
-  private async nominatim(query: string) {
+  private async nominatim(query: string, publicAPI = false) {
     const request: Geocoding.NominatimRequest = {
       q: query,
       format: 'json',
       limit: '1',
     };
     const params = new URLSearchParams(request);
-    console.log(`requesting to ${this.NOMINATIM_URL}?${params} ...`);
+    console.log(
+      `requesting to ${
+        publicAPI ? this.NOMINATIM_URL : this.NOMINATIM_LOCAL_ENDPOINT
+      }?${params} ...`,
+    );
     const rawResponse = await fetch(`${this.NOMINATIM_URL}?${params}`).then(
       (response) => response.json(),
     );
@@ -54,6 +59,8 @@ export class Geocoding {
   public async getGeocode(query: string): Promise<Geocode> {
     switch (this.method) {
       case Geocoding.Method.Nominatim:
+        return this.nominatim(query, true);
+      case Geocoding.Method.NominatimLocal:
         return this.nominatim(query);
       default:
         throw new Error('無効な`method`');
@@ -68,6 +75,7 @@ export namespace Geocoding {
   export enum Method {
     Unset = 'UNSET',
     Nominatim = 'NOMINATIM',
+    NominatimLocal = 'NOMINATIM_LOCAL',
   }
 
   export type NominatimRequest = {

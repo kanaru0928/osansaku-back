@@ -28,4 +28,5 @@ $ ./update_osm.sh
 ```bash
 $ docker-compose up
 ```
-を実行して開発環境を起動します。
+を実行して開発環境を起動します。nominatimのデータが入っていない状態だと、地図データを利用したインデックス化が始まりますが、こちらも数時間かかるので、開発環境を構築したいだけなら[`docker-compose.yml`](docker-compose.yml)内の`nomiatim`サービス部分をコメントアウトすることをおすすめします。
+

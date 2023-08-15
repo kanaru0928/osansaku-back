@@ -131,3 +131,4 @@ dist
 
 *.osm.pbf
 geographic/*
+nominatim-data/

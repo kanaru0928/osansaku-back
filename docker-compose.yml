@@ -13,5 +13,15 @@ services:
     volumes:
       - ./geographic:/data
     command: osrm-routed --algorithm mld /data/japan-latest.osrm
+  nominatim:
+    image: mediagis/nominatim:4.2
+    container_name: nominatim
+    volumes:
+      - ./geographic:/nominatim/data
+      - ./nominatim-data:/var/lib/postgresql/14/main
+    environment:
+      - PBF_PATH=/nominatim/data/japan-latest.osm.pbf
+      - REPLICATION_URL=https://download.geofabrik.de/asia/japan-updates/
+    shm_size: 1gb
 volumes:
   node_modules:
