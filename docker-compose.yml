@@ -15,7 +15,6 @@ services:
     command: osrm-routed --algorithm mld /data/japan-latest.osrm
   nominatim:
     image: mediagis/nominatim:4.2
-    container_name: nominatim
     volumes:
       - ./geographic:/nominatim/data
       - ./nominatim-data:/var/lib/postgresql/14/main
@@ -29,8 +28,9 @@ services:
       dockerfile: optimization/Dockerfile
     volumes:
       - ./optimization:/usr/optimization
+    ports:
+      - 8000:8000
     tty: true
-    
     
 volumes:
   node_modules:

@@ -134,6 +134,20 @@ export class OSRMAdaptor implements PathSearcher {
       });
   }
 
+  async getDuration(
+    origin: Coordinate,
+    destination: Coordinate,
+  ): Promise<number> {
+    const endpoint = this.createQuery(origin, destination);
+    console.log(`requiesting to ${endpoint}`);
+    return await fetch(endpoint)
+      .then((response) => response.json())
+      .then((response) => {
+        this.errorHandle(response);
+        return response['routes'][0]['duration'];
+      });
+  }
+
   async search(origin: Coordinate, destination: Coordinate) {
     const response = await fetch(
       this.createQuery(origin, destination, {

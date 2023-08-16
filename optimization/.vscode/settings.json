@@ -4,6 +4,12 @@
     "editor.formatOnType": true,
     "editor.wordBasedSuggestions": false,
     "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.black-formatter",
   },
-  "editor.rulers": [88]
+  "editor.rulers": [
+    88
+  ],
+  "files.autoSave": "afterDelay",
+  "editor.formatOnSave": true,
+  "python.formatting.provider": "none"
 }

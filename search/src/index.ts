@@ -4,19 +4,20 @@ import { OSMDistanceMatrixConstructor } from './graph/osmDistanceMatrixConstruct
 
 (async () => {
   const geocoding = new Geocoding(Geocoding.Method.NominatimLocal);
-  const places = [
-    (await geocoding.getGeocode('university of electro-communications'))
-      .coordinate,
-    (
-      await geocoding.getGeocode(
-        'tokyo university of agriculture and technology',
-      )
-    ).coordinate,
-    (await geocoding.getGeocode('chofu station')).coordinate,
-    (await geocoding.getGeocode('fuchu station')).coordinate,
+  const placesPromise = [
+    geocoding.getGeocode('府中駅'),
+    geocoding.getGeocode('府中の森'),
+    geocoding.getGeocode('東京競馬場'),
+    geocoding.getGeocode('関戸橋'),
+    geocoding.getGeocode('東京農工大'),
+    geocoding.getGeocode('府中駅'),
   ];
+
+  const places = (await Promise.all(placesPromise)).map((g) => g.coordinate);
+
   const distanceMatrixConstructor = new OSMDistanceMatrixConstructor();
   console.log(
     inspect(await distanceMatrixConstructor.getGraph(places), { depth: null }),
   );
+  console.log(new URLSearchParams());
 })();

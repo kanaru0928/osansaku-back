@@ -17,9 +17,8 @@ export class OSMDistanceMatrixConstructor implements DistanceMatrixConstructor {
     for (let i = 0; i < numNodes; i++) {
       for (let j = 0; j < numNodes; j++) {
         if (i !== j) {
-          ret.graph[i][j] = await this.pathSearcher.getDistance(
-            places[i],
-            places[j],
+          ret.graph[i][j] = Math.round(
+            await this.pathSearcher.getDuration(places[i], places[j]),
           );
         } else {
           ret.graph[i][j] = 0;
