@@ -30,3 +30,20 @@ $ docker-compose up
 ```
 を実行して開発環境を起動します。nominatimのデータが入っていない状態だと、地図データを利用したインデックス化が始まりますが、こちらも数時間かかるので、開発環境を構築したいだけなら[`docker-compose.yml`](docker-compose.yml)内の`nomiatim`サービス部分をコメントアウトすることをおすすめします。
 
+## 前処理データの事前ダウンロード
+[リンク](https://drive.google.com/drive/folders/1G6V8W0iXqfddFV13j17iOPmSFrJkSe2S?usp=sharing)から前処理データをダウンロードできます。`nominatim-data`と`geographic`ディレクトリを最上位層に置いてください。
+<pre>
+.
+├─ docker-compose.yml
+├─ geographic
+├─ nominatim-data
+├─ optimization
+├─ README.md
+├─ search
+└─ update_osm.sh
+</pre>
+また、`nominatim-data`ディレクトリ以下の権限を、次のように変更してください。
+```bash
+$ sudo chown -R 101:root nominatim-data
+$ sudo chmod -R 750 nominatim-data
+```
