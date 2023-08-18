@@ -15,12 +15,8 @@
             },
           ],
           time_matrix: [[0]],
-          start_node: {
-            timedate: 0,
-          },
-          end_node: {
-            timedate: 0,
-          },
+          start_node: 0,
+          end_node: 0,
         }),
       })
     ).json(),

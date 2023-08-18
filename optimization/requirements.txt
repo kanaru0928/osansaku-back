@@ -2,3 +2,4 @@ fastapi
 ortools
 uvicorn[standard]
 black
+easydict

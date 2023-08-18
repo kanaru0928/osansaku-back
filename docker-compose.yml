@@ -31,6 +31,7 @@ services:
     ports:
       - 8000:8000
     tty: true
+    command: uvicorn main:app --reload --host 0.0.0.0
     
 volumes:
   node_modules:

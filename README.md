@@ -47,3 +47,8 @@ $ docker-compose up
 $ sudo chown -R 101:root nominatim-data
 $ sudo chmod -R 750 nominatim-data
 ```
+なお、権限変更後にdockerコンテナをビルドする場合、
+```bash
+$ sudo docker-compose up
+```
+と実行する必要があります。

@@ -14,10 +14,8 @@ import { OSMDistanceMatrixConstructor } from './graph/osmDistanceMatrixConstruct
   ];
 
   const places = (await Promise.all(placesPromise)).map((g) => g.coordinate);
-
   const distanceMatrixConstructor = new OSMDistanceMatrixConstructor();
   console.log(
     inspect(await distanceMatrixConstructor.getGraph(places), { depth: null }),
   );
-  console.log(new URLSearchParams());
 })();

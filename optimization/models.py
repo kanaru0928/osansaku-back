@@ -11,15 +11,12 @@ class Solution(BaseModel):
 
 
 class OptimizeRequest(BaseModel):
-    class __RequestNodeInfo(BaseModel):
+    class RequestNodeInfo(BaseModel):
         open_time: Union[int, None]
         close_time: Union[int, None]
         stay: Union[int, None]
 
-    class __EndNodeInfo(BaseModel):
-        datetime: int
-
-    nodes: List[__RequestNodeInfo]
+    nodes: List[RequestNodeInfo]
     time_matrix: List[List[int]]
-    start_node: __EndNodeInfo
-    end_node: __EndNodeInfo
+    start_node: int
+    end_node: int
