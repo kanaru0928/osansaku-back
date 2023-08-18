@@ -28,6 +28,7 @@ services:
       dockerfile: optimization/Dockerfile
     volumes:
       - ./optimization:/usr/optimization
+      - __pycache__:/usr/optimization/__pycache__
     ports:
       - 8000:8000
     tty: true
@@ -35,3 +36,4 @@ services:
     
 volumes:
   node_modules:
+  __pycache__:
