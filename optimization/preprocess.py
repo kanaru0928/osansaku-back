@@ -34,9 +34,9 @@ class PreProcessor:
         }
 
         windows[start_node] = 0, end_time
-        max_waiting_time = round(end_time / len(nodes) * 2)
+        max_waiting_time = round(end_time / len(req.time_matrix) * 2)
 
-        waiting = [node.stay if node.stay is not None else 0 for node in nodes.values()]
+        waiting = [nodes[i].stay if i in nodes else 0 for i in range(len(req.time_matrix))]
 
         return windows, waiting, max_waiting_time
 

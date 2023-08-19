@@ -1,3 +1,4 @@
+import { DistanceMatrix } from '../graph/distanceMatrix';
 import { Place } from './place';
 
 export class Places {
@@ -5,7 +6,7 @@ export class Places {
   startNode: number = 0;
   endNode: number = 0;
 
-  toJson(timeMatrix: number[][]) {
+  toJson(timeMatrix: DistanceMatrix) {
     const nodes: {
       [key: number]: { open_time?: number; close_time?: number; stay?: number };
     } = {};

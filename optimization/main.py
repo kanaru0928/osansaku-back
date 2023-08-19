@@ -22,11 +22,13 @@ def optimize(req: OptimizeRequest):
     solver.windows = windows
     solver.time_callback = solver.generate_time_callback()
 
-    solution = solver.solve()
-    
+    solution = solver.solve(req.nodes[req.end_node].close_time)
+
     if solution == None:
         raise HTTPException(status_code=404, detail="ROUTE_NOT_FOUND")
-    
+
+    solver.print_solution(solver.data, solver.manager, solver.routing, solution)
+
     ret = {"nodes": solver.to_array(solution)}
 
     return ret

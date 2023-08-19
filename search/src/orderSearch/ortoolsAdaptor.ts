@@ -1,3 +1,4 @@
+import { DistanceMatrix } from '../graph/distanceMatrix';
 import { OrderSearcher } from './orderSearcher';
 import { OrderTime } from './orderTime';
 import { Places } from './places';
@@ -13,8 +14,8 @@ const responseSchema = z.object({
 });
 
 export class ORToolsAdaptor implements OrderSearcher {
-  private async sendRequest(timeMatrix: number[][], places: Places) {
-    await (
+  private async sendRequest(timeMatrix: DistanceMatrix, places: Places) {
+    return (
       await fetch('http://optimization:8000/optimize', {
         method: 'POST',
         headers: {
@@ -25,8 +26,8 @@ export class ORToolsAdaptor implements OrderSearcher {
     ).json();
   }
 
-  search(places: Places, distanceMatrix: number[][]): OrderTime {
-    const rawResponse = this.sendRequest(distanceMatrix, places);
+  async search(places: Places, distanceMatrix: DistanceMatrix) {
+    const rawResponse = await this.sendRequest(distanceMatrix, places);
     const response = responseSchema.parse(rawResponse);
     const order = new Array(response.nodes.length);
     for (let i = 0; i < response.nodes.length; i++) {
@@ -35,8 +36,8 @@ export class ORToolsAdaptor implements OrderSearcher {
 
     const times: { from: number; to: number; time: number }[] = [];
 
-    const stayed = 0;
-    const lastSpecified = 0;
+    let stayed = 0;
+    let lastSpecified = 0;
     for (let i = 0; i < order.length; i++) {
       const index = order[i];
       const place = places.places[index];
@@ -44,13 +45,31 @@ export class ORToolsAdaptor implements OrderSearcher {
       if (place.open != undefined || place.close != undefined) {
         times.push({
           from: lastSpecified,
-          to: order[i - 1],
-          time: stayed
-        })
+          to: index,
+          time: stayed,
+        });
+        lastSpecified = index;
+        stayed = 0;
       }
+
+      if (i === order.length - 1) continue;
+
+      const timeDifference = response.nodes[order[i + 1]].time - node.time;
+      const distanceTime = distanceMatrix[index][order[i + 1]];
+      if (typeof distanceTime !== 'number') {
+        throw new Error('Not implemented');
+      }
+      const nowStayed =
+        timeDifference -
+        distanceTime -
+        (place.stay != undefined ? place.stay : 0);
+      stayed += nowStayed;
     }
     const ret: OrderTime = {
       order,
+      times,
     };
+
+    return ret;
   }
 }

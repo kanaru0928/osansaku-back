@@ -8,7 +8,6 @@ class Solution(BaseModel):
         time: int
 
     nodes: List[__ResponseNodeInfo]
-    code: str
 
 
 class OptimizeRequest(BaseModel):
