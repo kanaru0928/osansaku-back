@@ -12,32 +12,33 @@ class PreProcessor:
         # pprint(time_matrix)
         self.time_matrix[:, -1] = self.time_matrix[:, 0]
 
-    def __createWindows(
-        self,
-        nodes: List[OptimizeRequest.RequestNodeInfo],
-        start_node: int,
-        end_node: int,
-    ):
+    def preprocess(self, req: OptimizeRequest):
+        nodes = req.nodes
+
+        start_node = req.start_node
+        end_node = req.end_node
+
+        assert end_node in nodes
+
         end_time = nodes[end_node].close_time
-        nodes = np.array(nodes)
+
         assert nodes[start_node].open_time == 0
+
         windows = {
             i: (
                 node.open_time if node.open_time is not None else 0,
                 node.close_time if node.close_time is not None else end_time,
             )
-            for i, node in enumerate(nodes)
+            for i, node in nodes.items()
             if node.open_time is not None or node.close_time is not None
         }
+
         windows[start_node] = 0, end_time
         max_waiting_time = round(end_time / len(nodes) * 2)
-        return windows, max_waiting_time
 
-    def preprocess(self, req: OptimizeRequest):
-        windows, max_waiting_time = self.__createWindows(
-            req.nodes, req.start_node, req.end_node
-        )
-        return windows, max_waiting_time
+        waiting = [node.stay if node.stay is not None else 0 for node in nodes.values()]
+
+        return windows, waiting, max_waiting_time
 
 
 if __name__ == "__main__":

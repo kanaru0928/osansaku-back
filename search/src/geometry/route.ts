@@ -6,3 +6,9 @@ export type Route = {
   steps: Step[];
   allDistance: number;
 };
+
+export namespace Route{
+  function toGeojson(){
+    
+  }
+}

@@ -8,7 +8,7 @@ class Solver:
     windows: Dict[int, Tuple[int]] = {5: (18000, 18000)}
     waiting_time_max = 3600
 
-    def create_data_model(self, time_matrix=None, num_vehicles=1, depot=0):
+    def create_data_model(self, time_matrix=None, num_vehicles=1, depot=0, waiting=None):
         self.data = {}
         if time_matrix is not None:
             self.data["time_matrix"] = time_matrix
@@ -21,7 +21,10 @@ class Solver:
                 [1039, 991, 2461, 3665, 0, 1039],
                 [0, 1061, 1628, 2820, 1039, 0],
             ]
-
+        if waiting is not None:
+            self.data["waiting"] = waiting
+        else:
+            self.data["waiting"] = [0] * len(self.data["time_matrix"])
         self.data["num_vehicles"] = num_vehicles
         self.data["depot"] = depot
 
