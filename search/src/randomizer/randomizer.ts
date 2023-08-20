@@ -11,15 +11,16 @@ import { RandomizerTemplate } from './randomizerTemplate';
 
 export class Randomizer implements RandomizerTemplate {
   private calcBBox(x1: number, y1: number, x2: number, y2: number): BBox {
+    console.log(typeof x1, typeof y1, typeof x2, typeof y2);
     const dx = x2 - x1;
     const dy = y2 - y1;
     const r = Math.sqrt(dx * dx + dy * dy) / 2;
     const p = (x1 + x2) / 2;
     const q = (y1 + y2) / 2;
-    const b1 = q - r;
-    const b2 = p - r;
-    const b3 = q + r;
-    const b4 = p + r;
+    const b1 = p - r;
+    const b2 = q - r;
+    const b3 = p + r;
+    const b4 = q + r;
     return BBox.fromArray([
       Math.min(b1, b3),
       Math.min(b2, b4),
@@ -69,6 +70,7 @@ export class Randomizer implements RandomizerTemplate {
 
     const distanceMatrixConstrutor = new OSMDistanceMatrixConstructor();
     const coordinates = locations.concat(amenities);
+    // const coordinates = locations;
     const distanceMatrix = (
       await distanceMatrixConstrutor.getGraph(coordinates)
     ).graph;
@@ -88,10 +90,11 @@ export class Randomizer implements RandomizerTemplate {
     places.places[endNode].open = time;
     places.places[endNode].close = time;
     places.maxWaiting = 0;
+    places.withoutCost = true;
     distanceMatrix[endNode][places.startNode] = 0;
 
     for (let i = endNode + 1; i < places.places.length; i++) {
-      places.places[i].penalty = 1000000;
+      places.places[i].penalty = 1;
     }
     const order = (await orderSearcher.search(places, distanceMatrix)).order;
     console.log(`randomizer${option?.id}: orderd`);

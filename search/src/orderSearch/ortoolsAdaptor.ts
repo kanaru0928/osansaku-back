@@ -29,11 +29,12 @@ export class ORToolsAdaptor implements OrderSearcher {
   async search(places: Places, distanceMatrix: DistanceMatrix) {
     const rawResponse = await this.sendRequest(distanceMatrix, places);
     let response: { nodes: { order: number; time: number }[] };
+    console.log(`requesting to http://optimization:8000/optimize with`);
+    console.log(places.toJson(distanceMatrix));
     try {
       response = responseSchema.parse(rawResponse);
     } catch (e) {
-      console.log(places.toJson(distanceMatrix));
-      console.log(rawResponse);
+      console.error(rawResponse);
       throw new Error('parse error');
     }
     const order = new Array(response.nodes.length);

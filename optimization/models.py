@@ -22,3 +22,5 @@ class OptimizeRequest(BaseModel):
     start_node: int
     end_node: int
     max_waiting_time: Union[int, None] = Field(None)
+    zero_bind: Union[bool, None] = Field(True)
+    without_cost: bool = Field(False)

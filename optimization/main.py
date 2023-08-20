@@ -22,8 +22,14 @@ def optimize(req: OptimizeRequest):
     solver.windows = windows
     solver.time_callback = solver.generate_time_callback()
     solver.penalty = penalty
+    solver.zero_bind = req.zero_bind
 
-    solution = solver.solve(req.nodes[req.end_node].close_time)
+    if req.without_cost:
+        print("solve without cost")
+        solution = solver.solveWithoutCostDimension(req.nodes[req.end_node].close_time)
+    else:
+        print("solve with cost")
+        solution = solver.solve(req.nodes[req.end_node].close_time)
 
     if solution == None:
         raise HTTPException(status_code=404, detail="ROUTE_NOT_FOUND")

@@ -46,7 +46,10 @@ export class Geocoding {
       throw new Error(Exception.GEOCODE_NOT_FOUND);
     }
     const geocode: Geocode = {
-      coordinate: new Coordinate(rawResponse[0].lat, rawResponse[0].lon),
+      coordinate: new Coordinate(
+        parseFloat(rawResponse[0].lat),
+        parseFloat(rawResponse[0].lon),
+      ),
     };
     return geocode;
   }
