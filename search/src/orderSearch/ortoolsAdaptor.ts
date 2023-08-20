@@ -37,10 +37,17 @@ export class ORToolsAdaptor implements OrderSearcher {
       console.error(rawResponse);
       throw new Error('parse error');
     }
-    const order = new Array(response.nodes.length);
+    const numActiveNode = response.nodes.reduce((prev, val) => {
+      if(val.order !== -1) return prev + 1;
+      else return prev;
+    }, 0)
+    const order = new Array(numActiveNode);
     for (let i = 0; i < response.nodes.length; i++) {
-      order[response.nodes[i].order] = i;
+      if (response.nodes[i].order !== -1) {
+        order[response.nodes[i].order] = i;
+      }
     }
+    console.log(`got order: ${order}`);
 
     const times: { from: number; to: number; time: number }[] = [];
 
@@ -63,7 +70,7 @@ export class ORToolsAdaptor implements OrderSearcher {
         stayed = 0;
       }
 
-      if (i === order.length - 1) continue;
+      if (i >= order.length - 1) continue;
 
       const timeDifference = response.nodes[order[i + 1]].time - node.time;
       const distanceTime = distanceMatrix[index][order[i + 1]];

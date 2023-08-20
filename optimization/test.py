@@ -25,7 +25,7 @@ def optimize():
         2: (9000, 9000)
     }
     solver.time_callback = solver.generate_time_callback()
-    solver.penalty = {i: 1000 for i in range(3, 10)}
+    solver.penalty = {i: 1 for i in range(3, 10)}
     solver.zero_bind = False
 
     if True:
@@ -38,7 +38,7 @@ def optimize():
     if solution == None:
         raise Exception("No routes found")
 
-    solver.print_solution(solver.data, solver.manager, solver.routing, solution)
+    solver.print_solution(solution)
 
 if __name__ == "__main__":
     optimize()

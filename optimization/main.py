@@ -34,7 +34,7 @@ def optimize(req: OptimizeRequest):
     if solution == None:
         raise HTTPException(status_code=404, detail="ROUTE_NOT_FOUND")
 
-    solver.print_solution(solver.data, solver.manager, solver.routing, solution)
+    solver.print_solution(solution)
 
     ret = {"nodes": solver.to_array(solution)}
 

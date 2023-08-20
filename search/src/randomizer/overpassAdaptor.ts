@@ -2,7 +2,7 @@ import { BBox } from '../geometry/bbox';
 import { Coordinate } from '../geometry/coordinate';
 
 export class OverpassAdaptor {
-  static readonly LIMIT = 5;
+  static readonly LIMIT = 15;
   static readonly ENDPOINT = 'https://overpass-api.de/api/interpreter';
 
   async getAllAmenity(bbox: BBox) {

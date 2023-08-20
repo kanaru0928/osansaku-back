@@ -87,7 +87,7 @@ export class OSRMAdaptor implements PathSearcher {
     const ret: Route = {
       primaryRoute,
       steps,
-      allDistance: primary['distance'],
+      allDistance: primary['duration'],
     };
 
     return ret;

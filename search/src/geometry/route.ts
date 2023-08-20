@@ -8,23 +8,26 @@ export type Route = {
 };
 
 export namespace Route {
-  export function toGeojson(route: Route) {
+  export function toGeojson(...route: Route[]) {
+    let features = [];
+    for (let i = 0; i < route.length; i++) {
+      features.push({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: route[i].primaryRoute.map((c) => c.toLngLatArray()),
+        },
+        properties: {
+          _color: '#00ff00',
+          _opacity: 1,
+          _weight: 5,
+        },
+      });
+    }
+
     return {
       type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Featrue',
-          geometry: {
-            type: 'LineString',
-            coordinates: route.primaryRoute.map((c) => c.toLngLatArray()),
-          },
-          properties: {
-            _color: '#00ff00',
-            _opacity: 1,
-            _weight: 5,
-          },
-        },
-      ],
+      features,
     };
   }
 

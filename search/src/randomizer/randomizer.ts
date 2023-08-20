@@ -11,7 +11,6 @@ import { RandomizerTemplate } from './randomizerTemplate';
 
 export class Randomizer implements RandomizerTemplate {
   private calcBBox(x1: number, y1: number, x2: number, y2: number): BBox {
-    console.log(typeof x1, typeof y1, typeof x2, typeof y2);
     const dx = x2 - x1;
     const dy = y2 - y1;
     const r = Math.sqrt(dx * dx + dy * dy) / 2;
@@ -94,7 +93,7 @@ export class Randomizer implements RandomizerTemplate {
     distanceMatrix[endNode][places.startNode] = 0;
 
     for (let i = endNode + 1; i < places.places.length; i++) {
-      places.places[i].penalty = 1;
+      places.places[i].penalty = 1000;
     }
     const order = (await orderSearcher.search(places, distanceMatrix)).order;
     console.log(`randomizer${option?.id}: orderd`);
@@ -102,11 +101,13 @@ export class Randomizer implements RandomizerTemplate {
     const pathSearcher = new OSRMAdaptor();
     const routes: Promise<Route>[] = Array(order.length - 1);
     for (let i = 0; i < order.length - 1; i++) {
-      routes[i] = pathSearcher.search(coordinates[i], coordinates[i + 1]);
+      routes[i] = pathSearcher.search(
+        places.places[order[i]].location,
+        places.places[order[i + 1]].location,
+      );
     }
 
-    const routesToJoin = await Promise.all(routes);
-    const ret = Route.join(...routesToJoin);
+    const ret = await Promise.all(routes);
     console.log(`randomizer${option?.id}: finished`);
     return ret;
   }

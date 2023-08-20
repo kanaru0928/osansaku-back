@@ -34,7 +34,7 @@ class Solver:
         self.data["depot"] = depot
 
     def to_array(self, solution):
-        ret = [{} for _ in range(len(self.data["time_matrix"]))]
+        ret = [{"order": -1, "time": 0} for _ in range(len(self.data["time_matrix"]))]
         vehicle_id = 0
         time_dimension = self.routing.GetDimensionOrDie("Time")
         index = self.routing.Start(vehicle_id)
@@ -48,34 +48,43 @@ class Solver:
             order += 1
         return ret
 
-    def print_solution(self, data, manager, routing, solution):
-        """Prints solution on console."""
-        print(f"Objective: {solution.ObjectiveValue()}")
-        time_dimension = routing.GetDimensionOrDie("Time")
-        cost_dimension = routing.GetDimensionOrDie("Cost")
-        total_time = 0
-        for vehicle_id in range(data["num_vehicles"]):
-            index = routing.Start(vehicle_id)
+    def print_solution(self, assignment):
+        """Prints assignment on console."""
+        print(f"Objective: {assignment.ObjectiveValue()}")
+        # Display dropped nodes.
+        dropped_nodes = "Dropped nodes:"
+        for node in range(self.routing.Size()):
+            if self.routing.IsStart(node) or self.routing.IsEnd(node):
+                continue
+            if assignment.Value(self.routing.NextVar(node)) == node:
+                dropped_nodes += f" {self.manager.IndexToNode(node)}"
+        print(dropped_nodes)
+        # Display routes
+        total_distance = 0
+        total_load = 0
+        for vehicle_id in range(self.data["num_vehicles"]):
+            index = self.routing.Start(vehicle_id)
             plan_output = f"Route for vehicle {vehicle_id}:\n"
-            while not routing.IsEnd(index):
-                time_var = time_dimension.CumulVar(index)
-                cost_var = cost_dimension.CumulVar(index)
-                plan_output += (
-                    f"{manager.IndexToNode(index)}"
-                    f" Time({solution.Min(time_var)},{solution.Max(time_var)}),"
-                    f" Cost({solution.Min(cost_var)},{solution.Max(cost_var)})"
-                    " -> "
+            route_distance = 0
+            route_load = 0
+            while not self.routing.IsEnd(index):
+                node_index = self.manager.IndexToNode(index)
+                if node_index in self.penalty:
+                    route_load += self.penalty[node_index]
+                plan_output += f" {node_index} Load({route_load}) -> "
+                previous_index = index
+                index = assignment.Value(self.routing.NextVar(index))
+                route_distance += self.routing.GetArcCostForVehicle(
+                    previous_index, index, vehicle_id
                 )
-                index = solution.Value(routing.NextVar(index))
-            time_var = time_dimension.CumulVar(index)
-            plan_output += (
-                f"{manager.IndexToNode(index)}"
-                f" Time({solution.Min(time_var)},{solution.Max(time_var)})\n"
-            )
-            plan_output += f"Time of the route: {solution.Min(time_var)}min\n"
+            plan_output += f" {self.manager.IndexToNode(index)} Load({route_load})\n"
+            plan_output += f"Distance of the route: {route_distance}s\n"
+            plan_output += f"Load of the route: {route_load}\n"
             print(plan_output)
-            total_time += solution.Min(time_var)
-        print(f"Total time of all routes: {total_time}s")
+            total_distance += route_distance
+            total_load += route_load
+        print(f"Total Distance of all routes: {total_distance}s")
+        print(f"Total Load of all routes: {total_load}")
 
     def solve(self, end_time):
         self.manager = pywrapcp.RoutingIndexManager(
@@ -174,15 +183,15 @@ class Solver:
             time_dimension_name,
         )
         time_dimension = self.routing.GetDimensionOrDie(time_dimension_name)
-        # time_dimension.SetGlobalSpanCostCoefficient(1)
+        time_dimension.SetGlobalSpanCostCoefficient(1)
 
-        def nostay_callback(from_index, to_index):
-            from_node = self.manager.IndexToNode(from_index)
-            to_node = self.manager.IndexToNode(to_index)
-            return self.data["time_matrix"][from_node][to_node]
+        # def nostay_callback(from_index, to_index):
+        #     from_node = self.manager.IndexToNode(from_index)
+        #     to_node = self.manager.IndexToNode(to_index)
+        #     return self.data["time_matrix"][from_node][to_node]
 
-        nostay_callback_index = self.routing.RegisterTransitCallback(nostay_callback)
-        self.routing.SetArcCostEvaluatorOfAllVehicles(nostay_callback_index)
+        # nostay_callback_index = self.routing.RegisterTransitCallback(nostay_callback)
+        self.routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
 
         # cost_dimension_name = "Cost"
         # self.routing.AddDimension(
@@ -205,13 +214,13 @@ class Solver:
         #     )
         #     self.routing.solver().AddConstraint(condition)
 
-        # for i in range(self.data["num_vehicles"]):
-        #     self.routing.AddVariableMinimizedByFinalizer(
-        #         cost_dimension.CumulVar(self.routing.Start(i))
-        #     )
-        #     self.routing.AddVariableMinimizedByFinalizer(
-        #         cost_dimension.CumulVar(self.routing.End(i))
-        #     )
+        for i in range(self.data["num_vehicles"]):
+            self.routing.AddVariableMinimizedByFinalizer(
+                time_dimension.CumulVar(self.routing.Start(i))
+            )
+            self.routing.AddVariableMinimizedByFinalizer(
+                time_dimension.CumulVar(self.routing.End(i))
+            )
 
         for node in self.penalty:
             self.routing.AddDisjunction(
