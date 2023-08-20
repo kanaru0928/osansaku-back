@@ -7,9 +7,9 @@ export type BBox = {
 
 export namespace BBox {
   export function toArray(bbox: BBox) {
-    return [bbox.south, bbox.east, bbox.north, bbox.west];
+    return [bbox.south, bbox.west, bbox.north, bbox.east];
   }
   export function fromArray(arr: [number, number, number, number]): BBox {
-    return { south: arr[0], east: arr[1], north: arr[2], west: arr[3] };
+    return { south: arr[0], west: arr[1], north: arr[2], east: arr[3] };
   }
 }

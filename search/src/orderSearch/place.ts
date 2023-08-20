@@ -5,4 +5,5 @@ export type Place = {
   open?: number;
   close?: number;
   stay?: number;
+  penalty?: number;
 };

@@ -5,6 +5,7 @@ export class Places {
   places: Place[] = [];
   startNode: number = 0;
   endNode: number = 0;
+  maxWaiting?: number;
 
   toJson(timeMatrix: DistanceMatrix) {
     const nodes: {
@@ -29,6 +30,7 @@ export class Places {
       time_matrix: timeMatrix,
       start_node: this.startNode,
       end_node: this.endNode,
+      max_waiting_time: this.maxWaiting,
     });
   }
 }

@@ -16,11 +16,12 @@ def optimize(req: OptimizeRequest):
     solver = Solver()
     preprocessor = PreProcessor()
 
-    windows, waiting, waiting_time_max = preprocessor.preprocess(req)
+    windows, waiting, penalty, waiting_time_max = preprocessor.preprocess(req)
     solver.create_data_model(req.time_matrix, depot=req.start_node, waiting=waiting)
     solver.waiting_time_max = waiting_time_max
     solver.windows = windows
     solver.time_callback = solver.generate_time_callback()
+    solver.penalty = penalty
 
     solution = solver.solve(req.nodes[req.end_node].close_time)
 

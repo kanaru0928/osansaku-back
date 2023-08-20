@@ -57,8 +57,8 @@ export class OSRMAdaptor implements PathSearcher {
   }
 
   private createStep(obj: any) {
-    const intersections = (obj['intersections'] as any[]).map(
-      this.createIntersection,
+    const intersections = (obj['intersections'] as any[]).map((intersection) =>
+      this.createIntersection(intersection),
     );
     const path = this.createPath(obj['geometry']);
     const maneuver = this.createManeuver(obj['maneuver']);
@@ -74,11 +74,14 @@ export class OSRMAdaptor implements PathSearcher {
 
   private createRoute(obj: any): Route {
     const primary = obj['routes'][0];
-    const primaryRoute = (primary['coordinates'] as [number, number][]).map(
-      Coordinate.fromLngLat,
-    );
 
-    const steps = (primary['legs']['steps'] as any[]).map(this.createStep);
+    const primaryRoute = (
+      primary['geometry']['coordinates'] as [number, number][]
+    ).map(Coordinate.fromLngLat);
+
+    const steps = (primary['legs'][0]['steps'] as any[]).map((step) =>
+      this.createStep(step),
+    );
 
     // TODO: stepsをキャストして、validationをかける
     const ret: Route = {
@@ -149,13 +152,13 @@ export class OSRMAdaptor implements PathSearcher {
   }
 
   async search(origin: Coordinate, destination: Coordinate) {
-    const response = await fetch(
-      this.createQuery(origin, destination, {
-        steps: 'true',
-        overview: 'full',
-        geometries: 'geojson',
-      }),
-    ).then((response) => response.json());
+    const endpoint = this.createQuery(origin, destination, {
+      steps: 'true',
+      // overview: 'full',
+      geometries: 'geojson',
+    });
+    console.log(`requiesting to ${endpoint}`);
+    const response = await fetch(endpoint).then((response) => response.json());
 
     this.errorHandle(response);
 

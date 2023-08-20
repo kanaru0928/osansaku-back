@@ -13,7 +13,7 @@ export class OverpassAdaptor {
     const url = `${OverpassAdaptor.ENDPOINT}?${param}`;
     const response = await (await fetch(url)).json();
     const ret: Coordinate[] = (response['elements'] as any[]).map(
-      (v) => new Coordinate(v['lat'], v['lng']),
+      (v) => new Coordinate(v['lat'], v['lon']),
     );
     return ret;
   }

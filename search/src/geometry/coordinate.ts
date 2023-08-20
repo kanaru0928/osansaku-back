@@ -33,12 +33,24 @@ export class Coordinate {
     return `${this.lng}${separator}${this.lat}`;
   }
 
+  toLngLatArray() {
+    return [this.lng, this.lat];
+  }
+
+  toLatLngArray() {
+    return [this.lat, this.lng];
+  }
+
   clone() {
     return new Coordinate(this.lat, this.lng);
   }
 
   toString(): string {
     return this.toLatLng();
+  }
+
+  isEquals(coordinate: Coordinate) {
+    return this.lat === coordinate.lat && this.lng === coordinate.lng;
   }
 
   /**

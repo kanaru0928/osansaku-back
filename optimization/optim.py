@@ -6,6 +6,7 @@ from typing import Tuple, Dict
 
 class Solver:
     windows: Dict[int, Tuple[int]] = {5: (18000, 18000)}
+    penalty: Dict[int, int] = {}
     waiting_time_max = 3600
     RATIO = 2
 
@@ -95,7 +96,6 @@ class Solver:
             time_dimension_name,
         )
         time_dimension = self.routing.GetDimensionOrDie(time_dimension_name)
-        self.routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
         # time_dimension.SetGlobalSpanCostCoefficient(1)
 
         def nostay_callback(from_index, to_index):
@@ -104,6 +104,7 @@ class Solver:
             return self.data["time_matrix"][from_node][to_node]
 
         nostay_callback_index = self.routing.RegisterTransitCallback(nostay_callback)
+        self.routing.SetArcCostEvaluatorOfAllVehicles(nostay_callback_index)
 
         cost_dimension_name = "Cost"
         self.routing.AddDimension(
@@ -128,15 +129,24 @@ class Solver:
 
         for i in range(self.data["num_vehicles"]):
             self.routing.AddVariableMinimizedByFinalizer(
-                time_dimension.CumulVar(self.routing.Start(i))
+                cost_dimension.CumulVar(self.routing.Start(i))
             )
             self.routing.AddVariableMinimizedByFinalizer(
-                time_dimension.CumulVar(self.routing.End(i))
+                cost_dimension.CumulVar(self.routing.End(i))
+            )
+
+        for node in self.penalty:
+            self.routing.AddDisjunction(
+                [self.manager.NodeToIndex(node)], self.penalty[node]
             )
 
         search_parameters = pywrapcp.DefaultRoutingSearchParameters()
         search_parameters.first_solution_strategy = (
             routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+        )
+        search_parameters.time_limit.seconds = 1
+        search_parameters.local_search_metaheuristic = (
+            routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
         )
 
         solution = self.routing.SolveWithParameters(search_parameters)

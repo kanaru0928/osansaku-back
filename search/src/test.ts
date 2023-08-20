@@ -1,24 +1,14 @@
+import { inspect } from 'util';
+
 (async () => {
   console.log(
-    await (
-      await fetch('http://optimization:8000/optimize', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nodes: {
-            0: {
-              // open_time: 0,
-              close_time: 0,
-              // stay: 0,
-            },
-          },
-          time_matrix: [[0]],
-          start_node: 0,
-          end_node: 0,
-        }),
-      })
-    ).json(),
+    inspect(
+      await (
+        await fetch(
+          'http://osrm:5000/route/v1/walking/139.4854585229244,35.66369855;139.49186493178433,35.67657235?steps=true&overview=full&geometries=geojson',
+        )
+      ).json(),
+      { depth: null },
+    ),
   );
 })();

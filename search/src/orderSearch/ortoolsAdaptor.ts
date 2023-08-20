@@ -28,7 +28,14 @@ export class ORToolsAdaptor implements OrderSearcher {
 
   async search(places: Places, distanceMatrix: DistanceMatrix) {
     const rawResponse = await this.sendRequest(distanceMatrix, places);
-    const response = responseSchema.parse(rawResponse);
+    let response: { nodes: { order: number; time: number }[] };
+    try {
+      response = responseSchema.parse(rawResponse);
+    } catch (e) {
+      console.log(places.toJson(distanceMatrix));
+      console.log(rawResponse);
+      throw new Error('parse error');
+    }
     const order = new Array(response.nodes.length);
     for (let i = 0; i < response.nodes.length; i++) {
       order[response.nodes[i].order] = i;
@@ -42,13 +49,16 @@ export class ORToolsAdaptor implements OrderSearcher {
       const index = order[i];
       const place = places.places[index];
       const node = response.nodes[index];
-      if (place.open != undefined || place.close != undefined) {
+      if (
+        stayed !== 0 &&
+        (place.open != undefined || place.close != undefined)
+      ) {
         times.push({
           from: lastSpecified,
-          to: index,
+          to: i,
           time: stayed,
         });
-        lastSpecified = index;
+        lastSpecified = i;
         stayed = 0;
       }
 
@@ -60,9 +70,7 @@ export class ORToolsAdaptor implements OrderSearcher {
         throw new Error('Not implemented');
       }
       const nowStayed =
-        timeDifference -
-        distanceTime -
-        (place.stay != undefined ? place.stay : 0);
+        timeDifference - (place.stay != undefined ? place.stay : 0);
       stayed += nowStayed;
     }
     const ret: OrderTime = {

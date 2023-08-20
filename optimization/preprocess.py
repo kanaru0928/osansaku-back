@@ -32,13 +32,21 @@ class PreProcessor:
             for i, node in nodes.items()
             if node.open_time is not None or node.close_time is not None
         }
+        penalty = {
+            i: node.penalty for i, node in nodes.items() if node.penalty is not None
+        }
 
         windows[start_node] = 0, end_time
-        max_waiting_time = round(end_time / len(req.time_matrix) * 2)
+        if req.max_waiting_time is not None:
+            max_waiting_time = req.max_waiting_time
+        else:
+            max_waiting_time = round(end_time / len(req.time_matrix) * 2)
 
-        waiting = [nodes[i].stay if i in nodes else 0 for i in range(len(req.time_matrix))]
+        waiting = [
+            nodes[i].stay if i in nodes else 0 for i in range(len(req.time_matrix))
+        ]
 
-        return windows, waiting, max_waiting_time
+        return windows, waiting, penalty, max_waiting_time
 
 
 if __name__ == "__main__":
