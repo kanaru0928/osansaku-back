@@ -53,4 +53,8 @@ export namespace Route {
     const ret = routes.reduce((prev, route) => concat(prev, route), init);
     return ret;
   }
+
+  export function lastCoordinate(route: Route) {
+    return route.primaryRoute[route.primaryRoute.length - 1];
+  }
 }

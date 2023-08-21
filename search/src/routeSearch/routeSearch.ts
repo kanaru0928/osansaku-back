@@ -4,6 +4,7 @@ import { DistanceMatrixConstructor } from '../graph/distanceMatrixConstructor';
 import { Graph } from '../graph/graph';
 import { GraphConstructor } from '../graph/graphConstructor';
 import { OrderSearcher } from '../orderSearch/orderSearcher';
+import { Place } from '../orderSearch/place';
 import { Places } from '../orderSearch/places';
 import { PathSearcher } from '../pathSearch/pathSearcher';
 import { RandomizerTemplate } from '../randomizer/randomizerTemplate';
@@ -60,8 +61,6 @@ export class RouteSearch {
       );
     }
 
-    const routes = (await Promise.all(randomizes)).flat();
-
-    return routes;
+    return (await Promise.all(randomizes)).flat();
   }
 }

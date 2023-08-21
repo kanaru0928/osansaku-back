@@ -37,7 +37,7 @@ export class Coordinate {
     return [this.lng, this.lat];
   }
 
-  toLatLngArray() {
+  toLatLngArray(): [number, number] {
     return [this.lat, this.lng];
   }
 

@@ -6,4 +6,5 @@ export type Place = {
   close?: number;
   stay?: number;
   penalty?: number;
+  name?: string;
 };
