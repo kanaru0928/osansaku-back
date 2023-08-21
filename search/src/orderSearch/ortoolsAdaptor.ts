@@ -1,4 +1,5 @@
 import { DistanceMatrix } from '../graph/distanceMatrix';
+import { Exception } from '../utils/exception';
 import { OrderSearcher } from './orderSearcher';
 import { OrderTime } from './orderTime';
 import { Places } from './places';
@@ -35,12 +36,16 @@ export class ORToolsAdaptor implements OrderSearcher {
       response = responseSchema.parse(rawResponse);
     } catch (e) {
       console.error(rawResponse);
-      throw new Error('parse error');
+      if ('detail' in rawResponse && rawResponse.detail === 'ROUTE_NOT_FOUND') {
+        throw new Error(Exception.ROUTE_NOT_FOUND);
+      } else {
+        throw new Error(Exception.UNKNOWN_ERROR);
+      }
     }
     const numActiveNode = response.nodes.reduce((prev, val) => {
-      if(val.order !== -1) return prev + 1;
+      if (val.order !== -1) return prev + 1;
       else return prev;
-    }, 0)
+    }, 0);
     const order = new Array(numActiveNode);
     for (let i = 0; i < response.nodes.length; i++) {
       if (response.nodes[i].order !== -1) {

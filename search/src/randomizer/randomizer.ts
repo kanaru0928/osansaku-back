@@ -93,7 +93,7 @@ export class Randomizer implements RandomizerTemplate {
     distanceMatrix[endNode][places.startNode] = 0;
 
     for (let i = endNode + 1; i < places.places.length; i++) {
-      places.places[i].penalty = 1000;
+      places.places[i].penalty = Math.round(time / 60);
     }
     const order = (await orderSearcher.search(places, distanceMatrix)).order;
     console.log(`randomizer${option?.id}: orderd`);

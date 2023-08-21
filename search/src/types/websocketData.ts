@@ -115,6 +115,7 @@ export interface WebSocketPlaceNGResponse extends WebSocketNGResponseBase<"place
 
 export interface WebSocketGPSOKResponse extends WebSocketOKResponseBase<"gps"> {
   next_action: {
+    heading: number;
     location: LatLng;
     distance: number;
     /**

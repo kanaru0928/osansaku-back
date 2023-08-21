@@ -61,6 +61,6 @@ export class RouteSearch {
       );
     }
 
-    return (await Promise.all(randomizes)).flat();
+    return (await Promise.all(randomizes));
   }
 }

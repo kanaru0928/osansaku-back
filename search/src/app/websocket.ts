@@ -7,6 +7,8 @@ import {
   WebSocketGPSRequest,
   WebSocketGreetOKResponse,
   WebSocketGreetRequest,
+  WebSocketInfoOKResponse,
+  WebSocketInfoRequest,
   WebSocketPatchNGResponse,
   WebSocketPatchOKResponse,
   WebSocketPatchRequest,
@@ -19,13 +21,16 @@ import { Exception } from '../utils/exception';
 import { WebsocketError as WebSocketError } from '../utils/websocketError';
 import { Coordinate } from '../geometry/coordinate';
 import { MapRouter } from '../routeSearch/mapRouter';
+import { Route } from '../geometry/route';
 
-export class WebSocketServer {
+export class MyWebSocketServer {
   server: websocket.Server;
   userDatas: { [key: string]: UserData } = {};
 
+  readonly PORT = 8000;
+
   constructor() {
-    this.server = new websocket.Server({ port: 8000 });
+    this.server = new websocket.Server({ port: this.PORT });
   }
 
   private greet(sock: websocket, data: WebSocketGreetRequest) {
@@ -45,7 +50,7 @@ export class WebSocketServer {
   }
 
   private checkUser(sock: websocket, data: any) {
-    if (data.user in this.userDatas) {
+    if (!(data.user in this.userDatas)) {
       const err: WebSocketPatchNGResponse = {
         format_version: '1',
         status: 'NG',
@@ -64,10 +69,10 @@ export class WebSocketServer {
   private patch(sock: websocket, data: WebSocketPatchRequest) {
     if (!this.checkUser(sock, data)) return;
 
-    const routeSearch = this.userDatas[data.user].mapRouter;
+    const mapRouter = this.userDatas[data.user].mapRouter;
     if (data.settings.source != undefined) {
       const source = data.settings.source;
-      routeSearch.source = {
+      mapRouter.source = {
         location: Coordinate.fromLatLng(source.location),
         open: source.date,
         name: source.name,
@@ -75,26 +80,35 @@ export class WebSocketServer {
     }
     if (data.settings.destination != undefined) {
       const destination = data.settings.destination;
-      routeSearch.destination = {
+      mapRouter.destination = {
         location: Coordinate.fromLatLng(destination.location),
         open: destination.date,
         close: destination.date,
         name: destination.name,
       };
-      if (routeSearch.source != undefined) {
-        routeSearch.source = {
+      if (mapRouter.source == undefined) {
+        mapRouter.source = {
           location: Coordinate.fromLatLng(destination.location),
         };
       }
-      routeSearch.source!.close = destination.date;
+      console.log(mapRouter.source);
+      mapRouter.source!.close = destination.date;
+      console.log(mapRouter.source);
     }
     if (data.settings.via != undefined) {
-      routeSearch.via = data.settings.via.map((place) => {
+      mapRouter.via = data.settings.via.map((place) => {
         return {
           location: Coordinate.fromLatLng(place.location),
+          open: place.open,
+          close: place.close,
+          name: place.name,
+          stay: place.stay,
         };
       });
     }
+
+    console.log('patched');
+    console.log(mapRouter);
 
     const response: WebSocketPatchOKResponse = {
       format_version: '1',
@@ -106,7 +120,7 @@ export class WebSocketServer {
 
   private wsError(
     sock: websocket,
-    data: WebSocketRequest,
+    data: WebSocketRequest | { type: null },
     reason: WebSocketError,
   ) {
     const response = {
@@ -117,40 +131,55 @@ export class WebSocketServer {
     sock.send(JSON.stringify(response));
   }
 
-  private gps(sock: websocket, data: WebSocketGPSRequest) {
+  private async gps(sock: websocket, data: WebSocketGPSRequest) {
     if (!this.checkUser(sock, data)) return;
     const mapRouter = this.userDatas[data.user].mapRouter;
-    try {
-      mapRouter.addGPSInfo(Coordinate.fromLatLng(data.location), data.heading);
-    } catch (error) {
-      if (error instanceof Error) {
-        console.warn(error.message);
-        if (error.message === Exception.ROUTE_NOT_FOUND) {
-          this.wsError(sock, data, WebSocketError.ROUTE_NOT_FOUND);
-        } else {
-          this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
-        }
-      } else if (typeof error === 'string') {
-        console.warn(error);
-        this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
-      } else {
-        console.warn('unexpected error');
-        this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
-      }
-    }
 
-    const step = mapRouter.nextStep!;
+    let nextAction = null;
+
+    if (!mapRouter.isEnded()) {
+      await mapRouter.addGPSInfo(
+        Coordinate.fromLatLng(data.location),
+        data.heading,
+      );
+
+      const step = mapRouter.nextStep!;
+
+      nextAction = {
+        location: step.maneuver.location.toLatLngArray(),
+        distance: step.distance,
+        modifier: step.maneuver.modifier,
+        action: step.maneuver.type,
+        heading: mapRouter.relativeHeading,
+      };
+    }
 
     const ret: WebSocketGPSOKResponse = {
       format_version: '1',
       status: 'OK',
       type: 'gps',
-      next_action: {
-        location: step.maneuver.location.toLatLngArray(),
-        distance: step.distance,
-        modifier: step.maneuver.modifier,
-        action: step.maneuver.type,
-      },
+      next_action: nextAction,
+    };
+
+    sock.send(JSON.stringify(ret));
+  }
+
+  private info(sock: websocket, data: WebSocketInfoRequest) {
+    if (!this.checkUser(sock, data)) return;
+
+    const mapRouter = this.userDatas[data.user].mapRouter;
+    if (!mapRouter.isEnded()) throw new Error(Exception.NOT_INITIALIZED);
+
+    const geojson = mapRouter.getGeoJson();
+    const distance = Route.getDistanceFromGeojson(geojson);
+
+    const ret: WebSocketInfoOKResponse = {
+      distance,
+      duration: mapRouter.duration!,
+      format_version: '1',
+      geojson: JSON.stringify(geojson),
+      status: 'OK',
+      type: 'info',
     };
 
     sock.send(JSON.stringify(ret));
@@ -167,7 +196,7 @@ export class WebSocketServer {
     sock.send(JSON.stringify(ret));
   }
 
-  private onGetMessageV1(sock: websocket, data: WebSocketRequest) {
+  private async onGetMessageV1(sock: websocket, data: WebSocketRequest) {
     try {
       switch (data.type) {
         case 'greet':
@@ -180,36 +209,64 @@ export class WebSocketServer {
           this.wsError(sock, data, WebSocketError.INVALID_REQUEST);
           break;
         case 'gps':
-          this.gps(sock, data);
+          await this.gps(sock, data);
+          break;
+        case 'info':
+          this.info(sock, data);
           break;
         case 'disconnect':
           this.disconnect(sock, data);
           break;
       }
-    } catch (message) {
-      console.warn(message);
-      this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
+    } catch (error) {
+      console.warn(error);
+      if (error instanceof Error) {
+        console.warn(error.message);
+        switch (error.message) {
+          case Exception.ROUTE_NOT_FOUND:
+            this.wsError(sock, data, WebSocketError.ROUTE_NOT_FOUND);
+            break;
+          case Exception.NOT_INITIALIZED:
+            this.wsError(sock, data, WebSocketError.NO_SETTINGS);
+            break;
+          default:
+            this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
+            break;
+        }
+      } else if (typeof error === 'string') {
+        console.warn(error);
+        this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
+      } else {
+        console.warn('unexpected error');
+        this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);
+      }
     }
   }
 
-  private onGetMessage(sock: websocket, message: websocket.RawData) {
-    const data: WebSocketRequest = JSON.parse(message.toString());
-
-    switch (data.format_version) {
-      case '1':
-        this.onGetMessageV1(sock, data);
-        break;
-      default:
-        this.wsError(sock, data, WebSocketError.INVALID_REQUEST);
-        break;
+  private async onGetMessage(sock: websocket, message: websocket.RawData) {
+    try {
+      const data: WebSocketRequest = JSON.parse(message.toString());
+      switch (data.format_version) {
+        case '1':
+          await this.onGetMessageV1(sock, data);
+          break;
+        default:
+          this.wsError(sock, data, WebSocketError.INVALID_REQUEST);
+          break;
+      }
+    } catch (_) {
+      this.wsError(sock, { type: null }, WebSocketError.INVALID_REQUEST);
     }
   }
 
-  connect() {
+  listen() {
     this.server.on('connection', (sock) => {
+      console.log(`connected`);
       sock.on('message', (message) => {
         this.onGetMessage(sock, message);
       });
     });
+    const address = this.server.address() as websocket.AddressInfo;
+    console.log(`listening on port ${address.address}:${address.port}`);
   }
 }

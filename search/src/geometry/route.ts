@@ -1,5 +1,6 @@
 import { Coordinate } from './coordinate';
 import { Step } from './step';
+import * as turf from '@turf/turf';
 
 export type Route = {
   primaryRoute: Coordinate[];
@@ -56,5 +57,10 @@ export namespace Route {
 
   export function lastCoordinate(route: Route) {
     return route.primaryRoute[route.primaryRoute.length - 1];
+  }
+
+  export function getDistanceFromGeojson(geojson: any) {
+    const distance = turf.length(geojson) * 1000;
+    return distance;
   }
 }

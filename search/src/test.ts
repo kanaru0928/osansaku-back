@@ -46,7 +46,7 @@ import { writeFile } from 'fs';
   console.log(order);
 
   const randomizer = new Randomizer();
-  const routes: Promise<Route>[] = new Array(order.times.length);
+  const routes: Promise<Route[]>[] = new Array(order.times.length);
   for (let i = 0; i < routes.length; i++) {
     let randomizeLocation: Coordinate[] = [];
     for (let j = order.times[i].from; j <= order.times[i].to; j++) {
@@ -58,10 +58,14 @@ import { writeFile } from 'fs';
   }
   const route = await Promise.all(routes);
   // console.log(JSON.stringify(Route.toGeojson(route)));
-  writeFile('out.json', JSON.stringify(Route.toGeojson(...route)), () => {
-    console.log('write end');
-  });
+  writeFile(
+    'out.json',
+    JSON.stringify(Route.toGeojson(...route.flat())),
+    () => {
+      console.log('write end');
+    },
+  );
   console.log(
-    `duration: ${route.reduce((prev, r) => prev + r.allDistance, 0)}`,
+    `duration: ${route.flat().reduce((prev, r) => prev + r.allDistance, 0)}`,
   );
 })();

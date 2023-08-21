@@ -1,4 +1,4 @@
-import { OSMGraphConstructor } from '../graph/osmGraphConstructor';
+import { OSMDistanceMatrixConstructor } from '../graph/osmDistanceMatrixConstructor';
 import { ORToolsAdaptor } from '../orderSearch/ortoolsAdaptor';
 import { OSRMAdaptor } from '../pathSearch/osrmAdaptor';
 import { Randomizer } from '../randomizer/randomizer';
@@ -13,7 +13,7 @@ export class DefaultRouteSearch implements RouteSearchBuilder {
   }
 
   buildGraphConstructor(): void {
-    this.routeSearch.setGraphConstructor(new OSMGraphConstructor());
+    this.routeSearch.setGraphConstructor(new OSMDistanceMatrixConstructor());
   }
 
   buildOrderSearcher(): void {
