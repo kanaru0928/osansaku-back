@@ -14,5 +14,5 @@ fi
 
 # OSRMのMLD用前処理
 docker run --rm -t -v "./geographic:/data" osrm/osrm-backend osrm-extract -p /opt/foot.lua /data/japan-latest.osm.pbf
-docker run --rm -t -v "./geographic:/data" osrm/osrm-backend osrm-partition /data/kanto-latest.osrm
-docker run --rm -t -v "./geographic:/data" osrm/osrm-backend osrm-customize /data/kanto-latest.osrm
+docker run --rm -t -v "./geographic:/data" osrm/osrm-backend osrm-partition /data/japan-latest.osrm
+docker run --rm -t -v "./geographic:/data" osrm/osrm-backend osrm-customize /data/japan-latest.osrm
