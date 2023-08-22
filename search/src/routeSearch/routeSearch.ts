@@ -44,6 +44,8 @@ export class RouteSearch {
 
     const timeMatrix = await this.timeMatrixConstructor!.getGraph(coordinates);
 
+    timeMatrix.graph[places.endNode][places.startNode] = 0;
+
     const orderTime = await this.orderSearcher!.search(
       places,
       timeMatrix.graph,
@@ -61,6 +63,6 @@ export class RouteSearch {
       );
     }
 
-    return (await Promise.all(randomizes));
+    return await Promise.all(randomizes);
   }
 }

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "npx ts-node src/index.ts"
+    "test": "npx ts-node src/index.ts",
+    "start": "npx ts-node src/index.ts"
   },
   "author": "kanaru",
   "license": "ISC",

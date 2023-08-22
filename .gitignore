@@ -296,3 +296,4 @@ cython_debug/
 
 search/osrm.json
 search/out.json
+search/wstest.txt

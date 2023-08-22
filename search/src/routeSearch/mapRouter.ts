@@ -72,12 +72,14 @@ export class MapRouter {
       console.log('generating routes');
       this.routes = await this.routeSearch.search(this.places!);
       console.log('done: generating routes');
+      console.log(JSON.stringify(Route.toGeojson(...this.routes.flat())));
       this.startTime = Date.now();
     }
   }
 
   isEnded() {
-    const ret = this.onMinor === this.routes!.length;
+    if (this.routes == undefined) return false;
+    const ret = this.onMinor === this.routes.length;
     if (ret && this.startTime != undefined && this.duration == undefined) {
       this.duration = Date.now() - this.startTime;
     }

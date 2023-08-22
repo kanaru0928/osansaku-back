@@ -3,6 +3,7 @@ import {
   WebSocketDisconnectRequest,
   WebSocketGPSRequest,
   WebSocketGreetRequest,
+  WebSocketInfoRequest,
   WebSocketPatchRequest,
 } from './types/websocketData';
 import { Geocoding } from './geocoding/geocoding';
@@ -23,7 +24,7 @@ const gps = (): WebSocketGPSRequest => {
     format_version: '1',
     heading: 0,
     type: 'gps',
-    location: [35.67206715, 139.4791738],
+    location: [35.65200715, 139.54382496],
     user: USER_ID,
   };
 };
@@ -37,9 +38,16 @@ const patch1 = async (): Promise<WebSocketPatchRequest> => {
       source: {
         date: now,
         location: (
-          await geocoding.getGeocode('府中駅')
+          await geocoding.getGeocode('調布駅')
         ).coordinate.toLatLngArray(),
-        name: '府中駅',
+        name: '調布駅',
+      },
+      destination: {
+        date: now + 1000,
+        location: (
+          await geocoding.getGeocode('電気通信大学')
+        ).coordinate.toLatLngArray(),
+        name: '電気通信大学',
       },
     },
     type: 'patch',
@@ -108,7 +116,19 @@ const disconnect = async (): Promise<WebSocketDisconnectRequest> => {
   };
 };
 
+const info = async (): Promise<WebSocketInfoRequest> => {
+  return {
+    format_version: '1',
+    type: 'info',
+    user: USER_ID,
+  };
+};
+
 (async () => {
+  console.log(JSON.stringify(await greet()));
+  console.log(JSON.stringify(await patch1()));
+  console.log(JSON.stringify(await gps()));
+  console.log(JSON.stringify(await patch1()));
   console.log(JSON.stringify(await disconnect()));
   // console.log(JSON.stringify(gps()));
 })();
