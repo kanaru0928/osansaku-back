@@ -135,13 +135,13 @@ export class MyWebSocketServer {
     if (!this.checkUser(sock, data)) return;
     const mapRouter = this.userDatas[data.user].mapRouter;
 
+    const coordinate = Coordinate.fromLatLng(data.location);
+    mapRouter.registerCoordinate(coordinate);
+
     let nextAction = null;
 
     if (!mapRouter.isEnded()) {
-      await mapRouter.addGPSInfo(
-        Coordinate.fromLatLng(data.location),
-        data.heading,
-      );
+      await mapRouter.addGPSInfo(coordinate, data.heading);
 
       const step = mapRouter.nextStep!;
 

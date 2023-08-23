@@ -128,7 +128,7 @@ const info = async (): Promise<WebSocketInfoRequest> => {
   console.log(JSON.stringify(await greet()));
   console.log(JSON.stringify(await patch1()));
   console.log(JSON.stringify(await gps()));
-  console.log(JSON.stringify(await patch1()));
   console.log(JSON.stringify(await disconnect()));
+  console.log(JSON.stringify(await info()));
   // console.log(JSON.stringify(gps()));
 })();

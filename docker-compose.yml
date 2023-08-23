@@ -7,21 +7,24 @@ services:
     volumes:
       - ./search:/usr/search
       - node_modules:/usr/search/node_modules
+    ports:
+      - 8000:8000
+    # command: npm start
     tty: true
   osrm:
     image: osrm/osrm-backend
     volumes:
       - ./geographic:/data
     command: osrm-routed --algorithm mld /data/japan-latest.osrm
-  nominatim:
-    image: mediagis/nominatim:4.2
-    volumes:
-      - ./geographic:/nominatim/data
-      - ./nominatim-data:/var/lib/postgresql/14/main
-    environment:
-      - PBF_PATH=/nominatim/data/japan-latest.osm.pbf
-      - REPLICATION_URL=https://download.geofabrik.de/asia/japan-updates/
-    shm_size: 1gb
+  # nominatim:
+  #   image: mediagis/nominatim:4.2
+  #   volumes:
+  #     - ./geographic:/nominatim/data
+  #     - ./nominatim-data:/var/lib/postgresql/14/main
+  #   environment:
+  #     - PBF_PATH=/nominatim/data/japan-latest.osm.pbf
+  #     - REPLICATION_URL=https://download.geofabrik.de/asia/japan-updates/
+  #   shm_size: 1gb
   optimization:
     build:
       context: .

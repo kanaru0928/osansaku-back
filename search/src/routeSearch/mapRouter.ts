@@ -79,7 +79,7 @@ export class MapRouter {
 
   isEnded() {
     if (this.routes == undefined) return false;
-    const ret = this.onMinor === this.routes.length;
+    const ret = this.onMajor === this.routes.length;
     if (ret && this.startTime != undefined && this.duration == undefined) {
       this.duration = Date.now() - this.startTime;
     }
@@ -90,25 +90,17 @@ export class MapRouter {
     await this.constructRoute();
     if (this.onMajor == undefined) this.onMajor = 0;
     if (this.onMinor == undefined) this.onMinor = 0;
-    if (this.passed == undefined) this.passed = [];
 
     if (this.isEnded()) {
       throw new Error(Exception.INVALID_VALUE);
     }
 
     const nowPoint = turf.point(coordinate.toLngLatArray());
-    if (this.passed.length === 0) {
-      this.passed = [coordinate];
-    } else {
-      const lastPoint = turf.point(
-        this.passed[this.passed.length - 1].toLngLatArray(),
-      );
-      if (
-        turf.distance(nowPoint, lastPoint) > MapRouter.RECORD_DISTANCE_THRESHOLD
-      ) {
-        this.passed?.push(coordinate);
-      }
-    }
+
+    console.log(`major: ${this.onMajor} / ${this.routes?.length}`);
+    console.log(
+      `minor: ${this.onMinor} / ${this.routes![this.onMajor].length}`,
+    );
 
     const destinationPoint = turf.point(
       this.routes![this.onMajor][this.onMinor].primaryRoute[1].toLatLngArray(),
@@ -142,9 +134,26 @@ export class MapRouter {
         ) {
           this.onMajor++;
           this.onMinor = 0;
-        } else {
+        } else if (this.onMinor !== this.routes![this.onMajor].length - 1) {
           this.onMinor++;
         }
+      }
+    }
+  }
+
+  registerCoordinate(coordinate: Coordinate) {
+    if (this.passed == undefined) this.passed = [];
+    const nowPoint = turf.point(coordinate.toLngLatArray());
+    if (this.passed.length === 0) {
+      this.passed = [coordinate];
+    } else {
+      const lastPoint = turf.point(
+        this.passed[this.passed.length - 1].toLngLatArray(),
+      );
+      if (
+        turf.distance(nowPoint, lastPoint) > MapRouter.RECORD_DISTANCE_THRESHOLD
+      ) {
+        this.passed?.push(coordinate);
       }
     }
   }
