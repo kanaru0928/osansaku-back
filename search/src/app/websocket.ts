@@ -132,6 +132,7 @@ export class MyWebSocketServer {
   }
 
   private async gps(sock: websocket, data: WebSocketGPSRequest) {
+    console.log(`recived heading: ${data.heading}`);
     if (!this.checkUser(sock, data)) return;
     const mapRouter = this.userDatas[data.user].mapRouter;
 
@@ -228,6 +229,9 @@ export class MyWebSocketServer {
             break;
           case Exception.NOT_INITIALIZED:
             this.wsError(sock, data, WebSocketError.NO_SETTINGS);
+            break;
+          case Exception.NOT_PREPARED:
+            this.wsError(sock, data, WebSocketError.NOT_PREPARED);
             break;
           default:
             this.wsError(sock, data, WebSocketError.UNKNOWN_ERROR);

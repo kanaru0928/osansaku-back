@@ -6,5 +6,6 @@ export enum Exception {
   NO_SEGMENT = '道路が見つかりませんでした。',
   EXTERNAL_ERROR = '外部エラー。',
   UNKNOWN_ERROR = '不明なエラー。',
-  NOT_INITIALIZED = '初期化不良です。'
+  NOT_INITIALIZED = '初期化不良です。',
+  NOT_PREPARED = '処理中にリクエストされました。',
 }

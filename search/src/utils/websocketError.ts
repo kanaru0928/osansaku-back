@@ -4,6 +4,7 @@ export const WebsocketError = {
   NO_SETTINGS: 'NO_SETTINGS',
   UNKNOWN_ERROR: 'UNKNOWN_ERROR',
   ROUTE_NOT_FOUND: 'ROUTE_NOT_FOUND',
+  NOT_PREPARED: 'NOT_PREPARED',
 };
 
 export type WebsocketError =

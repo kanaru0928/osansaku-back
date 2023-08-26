@@ -95,6 +95,10 @@ export class MapRouter {
       throw new Error(Exception.INVALID_VALUE);
     }
 
+    if (this.routes == undefined || this.routes.length === 0) {
+      throw new Error(Exception.NOT_PREPARED);
+    }
+
     const nowPoint = turf.point(coordinate.toLngLatArray());
 
     console.log(`major: ${this.onMajor} / ${this.routes?.length}`);
@@ -108,6 +112,8 @@ export class MapRouter {
     let bearing = turf.bearing(nowPoint, destinationPoint);
     if (bearing < 0) bearing += 360;
     this.relativeHeading = Heading.angle(heading, bearing);
+
+    console.log(`now:${heading} aim:${bearing} rel:${this.relativeHeading}`);
 
     let lastManeuverPoint: any;
     if (this.locationLastManeuverChanged != undefined) {
