@@ -1,12 +1,12 @@
 version: '3'
 services:
   search_api:
-    build: 
+    build:
       context: .
       dockerfile: search/Dockerfile
     volumes:
-      - ./search:/usr/search
-      - node_modules:/usr/search/node_modules
+      - ./search:/workspaces
+      - node_modules:/workspaces/search/node_modules
     ports:
       - 8000:8000
     # command: npm start
@@ -30,11 +30,11 @@ services:
       context: .
       dockerfile: optimization/Dockerfile
     volumes:
-      - ./optimization:/usr/optimization
+      - ./optimization:/workspace/optimization
       - __pycache__:/usr/optimization/__pycache__
     tty: true
     command: uvicorn main:app --reload --host 0.0.0.0
-    
+
 volumes:
   node_modules:
   __pycache__:
