@@ -1,4 +1,4 @@
-package router
+package listener
 
 type Router interface {
 	Listen()
