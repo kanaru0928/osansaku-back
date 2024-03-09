@@ -6,7 +6,11 @@
 	"image": "mcr.microsoft.com/devcontainers/go:1-1.22-bookworm",
 	"features": {
 		"ghcr.io/devcontainers/features/common-utils:2": {}
-	}
+	},
+	
+	"runArgs": [
+		"-p", "8339:8080"
+	]
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},

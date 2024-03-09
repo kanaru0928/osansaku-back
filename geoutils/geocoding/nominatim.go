@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"team411.jp/osansaku/geoutils/geotypes"
+	"team411.jp/osansaku/geoutils/i18n"
 )
 
 type Nominatim struct {
@@ -29,13 +30,14 @@ type nominatimCoding struct {
 	Address nominatimAddress `json:"address"`
 }
 
-const ENDPOINT string = "http://nominatim.openstreetmap.org/reverse"
+const CODING_ENDPOINT string = "http://nominatim.openstreetmap.org/search"
+const REVERSE_ENDPOINT string = "http://nominatim.openstreetmap.org/reverse"
 
 func (n *Nominatim) Geocodes(q string, lim int, lang string) []*geotypes.Coordinate {
-	u, err := url.Parse(ENDPOINT)
+	u, err := url.Parse(CODING_ENDPOINT)
 
 	if err != nil {
-		fmt.Println("URL Parse Error", ENDPOINT)
+		fmt.Println("URL Parse Error", CODING_ENDPOINT)
 		panic(err)
 	}
 
@@ -91,11 +93,11 @@ func (n *Nominatim) Geocode(q string, lang string) *geotypes.Coordinate {
 	return n.Geocodes(q, 1, lang)[0]
 }
 
-func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate) []string {
-	u, err := url.Parse(ENDPOINT)
+func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate, lang string) string {
+	u, err := url.Parse(REVERSE_ENDPOINT)
 
 	if err != nil {
-		fmt.Println("URL Parse Error", ENDPOINT)
+		fmt.Println("URL Parse Error", REVERSE_ENDPOINT)
 		panic(err)
 	}
 
@@ -103,6 +105,7 @@ func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate) []string {
 	query.Set("format", "json")
 	query.Set("lat", fmt.Sprintf("%f", c.Latitude))
 	query.Set("lon", fmt.Sprintf("%f", c.Longitude))
+	query.Set("accept-language", lang)
 	u.RawQuery = query.Encode()
 
 	fmt.Println("Requesting to", u.String())
@@ -122,7 +125,7 @@ func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate) []string {
 	resBodyStr := string(resBodyStream)
 	fmt.Println(resBodyStr)
 
-	var resBody []nominatimCoding
+	var resBody nominatimCoding
 
 	err = json.Unmarshal(resBodyStream, &resBody)
 	if err != nil {
@@ -132,15 +135,17 @@ func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate) []string {
 
 	defer res.Body.Close()
 
-	ret := make([]string, len(resBody))
-
-	for i, c := range resBody {
-		if c.Name != "" {
-			ret[i] = fmt.Sprintf("%s (%s)", c.Name, c.Address.City)
+	// ret := make([]string, len(resBody))
+	var ret string
+	
+	// for i, c := range resBody {
+		if resBody.Name != "" {
+			ret = fmt.Sprintf("%s (%s)", resBody.Name, resBody.Address.City)
 		} else {
-			ret[i] = fmt.Sprintf("%s%s周辺", c.Address.City, c.Address.Neighbourhood)
+			// ret = fmt.Sprintf("%s%s周辺", resBody.Address.City, resBody.Address.Neighbourhood)
+			ret = i18n.Get(i18n.T.Strings.Address, lang, resBody.Address.Neighbourhood, resBody.Address.City)
 		}
-	}
+	// }
 
-	return []string{}
+	return ret
 }
