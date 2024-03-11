@@ -3,3 +3,6 @@ address:
   en-US: "Around $1 $2"
   ja: "$2$1 周辺"
 
+unknown_spot:
+  en-US: "Unknown Spot"
+  ja: "不明な地点"

@@ -26,8 +26,9 @@ type nominatimAddress struct {
 }
 
 type nominatimCoding struct {
-	Name    string           `json:"name"`
-	Address nominatimAddress `json:"address"`
+	Name        string           `json:"name"`
+	AddressType string           `json:"addresstype"`
+	Address     nominatimAddress `json:"address"`
 }
 
 const CODING_ENDPOINT string = "http://nominatim.openstreetmap.org/search"
@@ -137,14 +138,18 @@ func (n *Nominatim) ReverseGeocode(c *geotypes.Coordinate, lang string) string {
 
 	// ret := make([]string, len(resBody))
 	var ret string
-	
+
 	// for i, c := range resBody {
-		if resBody.Name != "" {
+	if resBody.Name != ""{
+		if resBody.AddressType == "amenity" {
 			ret = fmt.Sprintf("%s (%s)", resBody.Name, resBody.Address.City)
 		} else {
 			// ret = fmt.Sprintf("%s%s周辺", resBody.Address.City, resBody.Address.Neighbourhood)
 			ret = i18n.Get(i18n.T.Strings.Address, lang, resBody.Address.Neighbourhood, resBody.Address.City)
 		}
+	} else {
+		ret = i18n.Get(i18n.T.Strings.UnknownSpot, lang)
+	}
 	// }
 
 	return ret

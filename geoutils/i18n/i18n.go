@@ -16,6 +16,7 @@ type LangText = map[string]string
 
 type I18nStrings struct {
 	Address LangText `yaml:"address"`
+	UnknownSpot LangText `yaml:"unknown_spot"`
 }
 
 type I18n struct {

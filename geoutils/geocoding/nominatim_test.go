@@ -14,7 +14,7 @@ func GeocodeTest(t *testing.T) {
 
 	for _, q := range query {
 		coord := geocoder.Geocodes(q, 1, "ja")[0]
-		ret := geocoder.ReverseGeocode(coord)[0]
+		ret := geocoder.ReverseGeocode(coord, "ja")[0]
 		if ret != q {
 			t.Errorf("GeocodeTest failed: %s", q)
 		}
