@@ -1,11 +1,9 @@
 version: '3'
 services:
   search_api:
-    build:
-      context: .
-      dockerfile: search/Dockerfile
+    image: node:slim
     volumes:
-      - ./search:/workspaces
+      - .:/workspaces
       - node_modules:/workspaces/search/node_modules
     ports:
       - 8000:8000

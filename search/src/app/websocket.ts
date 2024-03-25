@@ -265,7 +265,7 @@ export class MyWebSocketServer {
 
   listen() {
     this.server.on('connection', (sock) => {
-      console.log(`connected`);
+      console.log(`connected ${sock.url}`);
       sock.on('message', (message) => {
         this.onGetMessage(sock, message);
       });
